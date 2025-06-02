@@ -8,11 +8,16 @@ const AuthCallbackPage = () => {
 
     useEffect(() => {
         const handleAuthCallback = async () => {
-            const user = await checkAuthentication();
-            if (user) {
-                navigate('/'); // Redirect to home/dashboard if login successful
-            } else {
-                navigate('/login?error=auth_failed'); // Redirect to login with error if failed
+            try {
+                const user = await checkAuthentication();
+                if (user) {
+                    navigate('/'); // Redirect to home/dashboard if login successful
+                } else {
+                    navigate('/login?error=auth_failed'); // Redirect to login with error if failed
+                }
+            } catch (error) {
+                console.error("Authentication callback failed:", error);
+                navigate('/login?error=auth_failed_critical'); // Redirect to login with a specific error for critical failures
             }
         };
 
