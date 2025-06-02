@@ -164,3 +164,41 @@ This creates a `dist` folder with optimized static assets.
 *   **CSRF:** Spring Security's CSRF protection is enabled. The frontend `apiService.js` attempts to read the `XSRF-TOKEN` cookie and send it back as an `X-XSRF-TOKEN` header.
 *   **Backend User Endpoint:** The frontend relies on `/api/user/me` on the backend to fetch authenticated user details.
 *   **Node Version:** `react-router-dom` may show `EBADENGINE` warnings if your Node.js version is below 20.x. The application might still work, but for best compatibility, consider using Node.js v20 or higher.
+
+## Running with Docker Compose
+
+This application can be easily built and run using Docker Compose. This method containerizes both the frontend and backend services, making setup straightforward.
+
+1.  **Ensure Docker and Docker Compose are installed.**
+    You can find installation instructions on the [official Docker website](https://docs.docker.com/get-docker/).
+
+2.  **Configure OAuth2 Credentials (Important!)**
+    Before building the Docker images, you **must** configure the OAuth2 credentials in `backend/src/main/resources/application.properties` as described in the "Backend Setup > Configure OAuth2 Credentials" section above. The Docker build process for the backend will copy these settings into the image. If you haven't set them, authentication will fail.
+
+3.  **Build and Run:**
+    Navigate to the project root directory (where `docker-compose.yml` is located) and run:
+    ```bash
+    docker-compose up --build
+    ```
+    This command will:
+    *   Build the Docker image for the frontend service.
+    *   Build the Docker image for the backend service (including your OAuth2 credentials).
+    *   Start both services.
+
+4.  **Accessing the Application:**
+    Once the containers are up and running:
+    *   **Frontend:** Accessible at [http://localhost:3000](http://localhost:3000)
+    *   **Backend API:** Accessible at [http://localhost:8080](http://localhost:8080)
+    *   **H2 Database Console (via backend container):** [http://localhost:8080/h2-console](http://localhost:8080/h2-console)
+        *   JDBC URL: `jdbc:h2:mem:tododb`
+        *   User Name: `sa`
+        *   Password: (leave blank)
+
+5.  **Stopping the Application:**
+    To stop the services, press `Ctrl+C` in the terminal where `docker-compose up` is running. To stop and remove the containers, you can run:
+    ```bash
+    docker-compose down
+    ```
+
+**Note on Backend API URL for Frontend:**
+When running via Docker Compose, the frontend application (served by Nginx on port 3000) is configured to communicate with the backend service at `http://backend:8080`. The service name `backend` is used for inter-container communication within the Docker network.
